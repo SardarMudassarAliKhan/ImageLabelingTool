@@ -1,0 +1,32 @@
+[
+    {
+        "label": "GUI",
+        "type": "rectangle",
+        "coords": [
+            90,
+            33,
+            582,
+            188
+        ]
+    },
+    {
+        "label": "GUI",
+        "type": "rectangle",
+        "coords": [
+            571,
+            265,
+            571,
+            265
+        ]
+    },
+    {
+        "label": "Error",
+        "type": "rectangle",
+        "coords": [
+            104,
+            97,
+            366,
+            152
+        ]
+    }
+]
