@@ -8,7 +8,9 @@ class ImageLabelingTool:
     def __init__(self, root):
         self.root = root
         self.root.title("Mudassar Ali Solution - Image Labeling Tool")  # Set title with your name
-
+        self.root.geometry("1100x700")  # Set default window size
+        self.root.configure(bg="#f0f0f0")  # Light gray background for the app
+        
         self.folder_path = ""
         self.image_list = []
         self.current_image = None
@@ -32,63 +34,68 @@ class ImageLabelingTool:
         file_menu.add_command(label="Open Folder", command=self.load_folder)
         file_menu.add_command(label="Save Annotations", command=self.save_annotations)
 
-        # Frames
-        left_frame = tk.Frame(self.root)
-        left_frame.pack(side=tk.LEFT, padx=10, pady=10)
+        # Frames for layout
+        left_frame = tk.Frame(self.root, bg="#f0f0f0", padx=10, pady=10)
+        left_frame.grid(row=0, column=0, sticky=tk.N, padx=10, pady=10)
 
-        right_frame = tk.Frame(self.root)
-        right_frame.pack(side=tk.RIGHT, padx=10, pady=10)
+        right_frame = tk.Frame(self.root, bg="#f0f0f0", padx=10, pady=10)
+        right_frame.grid(row=0, column=1, sticky=tk.N, padx=10, pady=10)
 
         # Annotation Pane (listbox for annotations)
-        annotation_label = tk.Label(left_frame, text="Annotations")
-        annotation_label.pack(side=tk.TOP, pady=5)
+        annotation_frame = tk.LabelFrame(left_frame, text="Annotations", font=("Arial", 12, "bold"), bg="#ffffff", padx=10, pady=10, relief=tk.GROOVE)
+        annotation_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=5)
 
-        self.annotation_listbox = tk.Listbox(left_frame, height=10, width=40)
-        self.annotation_listbox.pack(side=tk.TOP, pady=5)
+        self.annotation_listbox = tk.Listbox(annotation_frame, height=10, width=40, font=("Arial", 10), bg="#f9f9f9", relief=tk.SUNKEN)
+        self.annotation_listbox.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         # Listbox for images
-        self.image_listbox = tk.Listbox(left_frame, height=10, width=40)
-        self.image_listbox.pack(side=tk.TOP, pady=5)
+        image_frame = tk.LabelFrame(left_frame, text="Images", font=("Arial", 12, "bold"), bg="#ffffff", padx=10, pady=10, relief=tk.GROOVE)
+        image_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=5)
+
+        self.image_listbox = tk.Listbox(image_frame, height=10, width=40, font=("Arial", 10), bg="#f9f9f9", relief=tk.SUNKEN)
+        self.image_listbox.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.image_listbox.bind('<<ListboxSelect>>', self.load_image)
 
         # Listbox for labels
-        label_frame = tk.Frame(left_frame)
-        label_frame.pack(side=tk.TOP)
+        label_frame = tk.LabelFrame(left_frame, text="Labels", font=("Arial", 12, "bold"), bg="#ffffff", padx=10, pady=10, relief=tk.GROOVE)
+        label_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=5)
 
-        label_title = tk.Label(label_frame, text="Labels")
-        label_title.pack(side=tk.TOP, pady=5)
+        self.label_listbox = tk.Listbox(label_frame, height=10, width=40, font=("Arial", 10), bg="#f9f9f9", relief=tk.SUNKEN)
+        self.label_listbox.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-        self.label_listbox = tk.Listbox(left_frame, height=10, width=40)
-        self.label_listbox.pack(side=tk.TOP, pady=10)
-
-        self.label_entry = tk.Entry(left_frame)
-        self.label_entry.pack(side=tk.LEFT)
-        add_label_button = tk.Button(left_frame, text="Add Label", command=self.add_label)
-        add_label_button.pack(side=tk.LEFT)
-        remove_label_button = tk.Button(left_frame, text="Remove Label", command=self.remove_label)
-        remove_label_button.pack(side=tk.LEFT)
+        self.label_entry = tk.Entry(label_frame, font=("Arial", 10), relief=tk.SUNKEN)
+        self.label_entry.pack(side=tk.LEFT, padx=5, pady=5)
+        
+        add_label_button = tk.Button(label_frame, text="Add Label", command=self.add_label, bg="#007bff", fg="white", font=("Arial", 10, "bold"), relief=tk.RAISED)
+        add_label_button.pack(side=tk.LEFT, padx=5)
+        
+        remove_label_button = tk.Button(label_frame, text="Remove Label", command=self.remove_label, bg="#dc3545", fg="white", font=("Arial", 10, "bold"), relief=tk.RAISED)
+        remove_label_button.pack(side=tk.LEFT, padx=5)
 
         # Canvas for image display
-        self.canvas = tk.Canvas(right_frame, width=800, height=600)
-        self.canvas.pack(side=tk.LEFT)
+        self.canvas_frame = tk.Frame(right_frame, bg="#f0f0f0")
+        self.canvas_frame.pack(side=tk.TOP, padx=10, pady=10)
+
+        self.canvas = tk.Canvas(self.canvas_frame, width=800, height=600, bg="#ffffff", relief=tk.SUNKEN)
+        self.canvas.pack()
         self.canvas.bind("<ButtonPress-1>", self.start_annotation)
         self.canvas.bind("<B1-Motion>", self.create_annotation)
         self.canvas.bind("<ButtonRelease-1>", self.end_annotation)
 
         # Tools frame (on the right side)
-        tools_frame = tk.Frame(right_frame)
-        tools_frame.pack(side=tk.RIGHT, padx=20)  # Padding to separate tools from the image
+        tools_frame = tk.LabelFrame(right_frame, text="Tools", font=("Arial", 12, "bold"), bg="#ffffff", padx=10, pady=10, relief=tk.GROOVE)
+        tools_frame.pack(side=tk.TOP, padx=10, pady=10)
 
-        point_button = tk.Button(tools_frame, text="Point", command=lambda: self.select_tool("point"))
+        point_button = tk.Button(tools_frame, text="Point", command=lambda: self.select_tool("point"), bg="#28a745", fg="white", font=("Arial", 10, "bold"), relief=tk.RAISED)
         point_button.pack(side=tk.TOP, pady=5)
 
-        rect_button = tk.Button(tools_frame, text="Rectangle", command=lambda: self.select_tool("rectangle"))
+        rect_button = tk.Button(tools_frame, text="Rectangle", command=lambda: self.select_tool("rectangle"), bg="#28a745", fg="white", font=("Arial", 10, "bold"), relief=tk.RAISED)
         rect_button.pack(side=tk.TOP, pady=5)
 
-        circle_button = tk.Button(tools_frame, text="Circle", command=lambda: self.select_tool("circle"))
+        circle_button = tk.Button(tools_frame, text="Circle", command=lambda: self.select_tool("circle"), bg="#28a745", fg="white", font=("Arial", 10, "bold"), relief=tk.RAISED)
         circle_button.pack(side=tk.TOP, pady=5)
 
-        polygon_button = tk.Button(tools_frame, text="Polygon", command=lambda: self.select_tool("polygon"))
+        polygon_button = tk.Button(tools_frame, text="Polygon", command=lambda: self.select_tool("polygon"), bg="#28a745", fg="white", font=("Arial", 10, "bold"), relief=tk.RAISED)
         polygon_button.pack(side=tk.TOP, pady=5)
 
     def load_folder(self):
@@ -149,37 +156,29 @@ class ImageLabelingTool:
 
     def end_annotation(self, event):
         if self.selected_tool == "rectangle":
-            x1, y1 = self.annotation_start
-            x2, y2 = event.x, event.y
-            self.canvas.create_rectangle(x1, y1, x2, y2, outline='red', tags="annotation")
-            annotation_details = f"Label: {self.selected_label}, Type: rectangle, Coords: [{x1},{y1},{x2},{y2}]"
-            self.annotation_listbox.insert(tk.END, annotation_details)
-            self.annotations.append({
+            annotation = {
                 "label": self.selected_label,
-                "type": "rectangle",
-                "coordinates": [x1, y1, x2, y2]
-            })
-        elif self.selected_tool == "point":
-            x, y = event.x, event.y
-            self.canvas.create_oval(x-2, y-2, x+2, y+2, fill='blue', tags="annotation")
-            annotation_details = f"Label: {self.selected_label}, Type: point, Coords: [{x},{y}]"
-            self.annotation_listbox.insert(tk.END, annotation_details)
-            self.annotations.append({
-                "label": self.selected_label,
-                "type": "point",
-                "coordinates": [x, y]
-            })
+                "type": self.selected_tool,
+                "coords": (self.annotation_start[0], self.annotation_start[1], event.x, event.y)
+            }
+            self.annotations.append(annotation)
+            self.annotation_listbox.insert(tk.END, f"{self.selected_label}: Rectangle at {annotation['coords']}")
+            self.canvas.create_rectangle(self.annotation_start[0], self.annotation_start[1],
+                                         event.x, event.y, outline='red', tags="annotation")
 
     def save_annotations(self):
         if not self.current_image:
-            messagebox.showwarning("No Image", "No image loaded to save annotations.")
+            messagebox.showwarning("No Image", "Please load an image first.")
             return
 
-        image_name = self.image_listbox.get(self.image_listbox.curselection())
+        image_name = os.path.basename(self.current_image.filename)
         annotation_file = os.path.join(self.folder_path, f"{image_name}.json")
-        with open(annotation_file, "w") as f:
-            json.dump(self.annotations, f)
-        messagebox.showinfo("Saved", f"Annotations saved for {image_name}")
+
+        with open(annotation_file, 'w') as f:
+            json.dump(self.annotations, f, indent=4)
+
+        messagebox.showinfo("Saved", f"Annotations saved to {annotation_file}")
+
 
 if __name__ == "__main__":
     root = tk.Tk()
